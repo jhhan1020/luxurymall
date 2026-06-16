@@ -9,9 +9,19 @@ import {
 } from "@tosspayments/tosspayments-sdk";
 import { useCart, type CartItem } from "@/lib/cart";
 import { createClient } from "@/lib/supabase/client";
-import { formatPrice } from "@/lib/types";
+import { formatPrice, type Shipping } from "@/lib/types";
+import ShippingForm from "@/components/ShippingForm";
 
 const CLIENT_KEY = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY!;
+
+const EMPTY_SHIPPING: Shipping = {
+  recipientName: "",
+  phone: "",
+  postalCode: "",
+  address: "",
+  addressDetail: "",
+  memo: "",
+};
 
 export default function CheckoutPage() {
   const { items, totalPrice, totalCount } = useCart();
@@ -22,6 +32,15 @@ export default function CheckoutPage() {
   const [widgetReady, setWidgetReady] = useState(false); // 결제 위젯 렌더 완료
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shipping, setShipping] = useState<Shipping>(EMPTY_SHIPPING);
+
+  // 배송지 필수 항목이 다 채워졌는지 (메모는 선택)
+  const shippingValid =
+    shipping.recipientName.trim() !== "" &&
+    shipping.phone.trim() !== "" &&
+    shipping.postalCode.trim() !== "" &&
+    shipping.address.trim() !== "" &&
+    shipping.addressDetail.trim() !== "";
 
   const widgetsRef = useRef<TossPaymentsWidgets | null>(null);
   const initedRef = useRef(false);
@@ -83,6 +102,12 @@ export default function CheckoutPage() {
     const snapshot = snapshotRef.current;
     if (!widgets || !snapshot) return;
 
+    if (!shippingValid) {
+      setError("배송지 정보를 모두 입력해 주세요.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setPaying(true);
     setError(null);
 
@@ -99,6 +124,7 @@ export default function CheckoutPage() {
         JSON.stringify({
           orderName,
           items: snapItems.map((i) => ({ id: i.id, quantity: i.quantity })),
+          shipping,
         })
       );
 
@@ -166,6 +192,11 @@ export default function CheckoutPage() {
         </div>
       </div>
 
+      {/* 배송지 정보 */}
+      <div className="mt-8">
+        <ShippingForm value={shipping} onChange={setShipping} />
+      </div>
+
       {/* 토스 결제수단 위젯 */}
       <div id="payment-method" className="mt-8" />
       {/* 토스 약관 동의 위젯 */}
@@ -175,11 +206,13 @@ export default function CheckoutPage() {
 
       <button
         onClick={handlePay}
-        disabled={paying || !widgetReady}
+        disabled={paying || !widgetReady || !shippingValid}
         className="mt-8 w-full rounded-sm bg-accent px-8 py-5 text-sm tracking-luxe text-white transition hover:opacity-90 disabled:opacity-50"
       >
         {!widgetReady
           ? "결제 수단을 불러오는 중…"
+          : !shippingValid
+          ? "배송지 정보를 입력해 주세요"
           : paying
           ? "결제 진행 중…"
           : `${formatPrice(totalPrice)} 결제하기`}

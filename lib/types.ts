@@ -47,6 +47,21 @@ export type Order = {
   amount: number;
   status: string;
   created_at: string;
+  recipient_name: string | null;
+  phone: string | null;
+  postal_code: string | null;
+  address: string | null;
+  address_detail: string | null;
+  memo: string | null;
+};
+
+export type Shipping = {
+  recipientName: string;
+  phone: string;
+  postalCode: string;
+  address: string;
+  addressDetail: string;
+  memo: string;
 };
 
 export type OrderItem = {

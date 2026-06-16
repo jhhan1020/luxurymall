@@ -29,7 +29,9 @@ export default function SuccessClient() {
     }
 
     const pending = localStorage.getItem("luxurymall_pending_order");
-    const parsed = pending ? JSON.parse(pending) : { orderName: "", items: [] };
+    const parsed = pending
+      ? JSON.parse(pending)
+      : { orderName: "", items: [], shipping: null };
 
     fetch("/api/confirm", {
       method: "POST",
@@ -40,6 +42,7 @@ export default function SuccessClient() {
         amount: Number(amountStr),
         orderName: parsed.orderName,
         items: parsed.items,
+        shipping: parsed.shipping,
       }),
     })
       .then(async (res) => {

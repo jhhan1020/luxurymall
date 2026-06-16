@@ -5,12 +5,20 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { paymentKey, orderId, amount, orderName, items } = body as {
+    const { paymentKey, orderId, amount, orderName, items, shipping } = body as {
       paymentKey: string;
       orderId: string;
       amount: number;
       orderName: string;
       items: { id: string; quantity: number }[];
+      shipping?: {
+        recipientName?: string;
+        phone?: string;
+        postalCode?: string;
+        address?: string;
+        addressDetail?: string;
+        memo?: string;
+      };
     };
 
     if (!paymentKey || !orderId || !amount) {
@@ -103,6 +111,12 @@ export async function POST(request: Request) {
         order_name: orderName,
         amount,
         status: "DONE",
+        recipient_name: shipping?.recipientName ?? null,
+        phone: shipping?.phone ?? null,
+        postal_code: shipping?.postalCode ?? null,
+        address: shipping?.address ?? null,
+        address_detail: shipping?.addressDetail ?? null,
+        memo: shipping?.memo ?? null,
       })
       .select()
       .single();

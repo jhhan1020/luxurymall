@@ -77,6 +77,21 @@ export default async function OrdersPage() {
                   <span>총 결제금액</span>
                   <span className="text-accent">{formatPrice(order.amount)}</span>
                 </div>
+
+                {order.recipient_name && (
+                  <div className="mt-4 border-t border-line pt-4 text-sm text-muted">
+                    <p className="mb-1 text-xs tracking-luxe text-foreground">
+                      배송지
+                    </p>
+                    <p>
+                      {order.recipient_name} · {order.phone}
+                    </p>
+                    <p>
+                      ({order.postal_code}) {order.address} {order.address_detail}
+                    </p>
+                    {order.memo && <p className="mt-1">메모: {order.memo}</p>}
+                  </div>
+                )}
               </li>
             );
           })}
