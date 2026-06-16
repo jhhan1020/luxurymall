@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import ProductCard from "@/components/ProductCard";
+import { ShaderAnimation } from "@/components/ui/shader-lines";
 import type { Product } from "@/lib/types";
 
 export default async function HomePage() {
@@ -15,19 +16,15 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* 히어로 */}
-      <section className="relative flex min-h-[78vh] items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=1600&q=80')",
-          }}
-        />
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="relative z-10 max-w-2xl px-6 text-center text-white">
+      {/* 히어로 — Three.js 셰이더 애니메이션 배경 */}
+      <section className="relative flex h-[88vh] items-center justify-center overflow-hidden bg-black">
+        {/* 움직이는 빛의 선 애니메이션 */}
+        <ShaderAnimation />
+        {/* 가독성을 위한 살짝의 어둠막 */}
+        <div className="pointer-events-none absolute inset-0 bg-black/20" />
+        <div className="pointer-events-none relative z-10 max-w-2xl px-6 text-center text-white">
           <p className="text-xs tracking-luxe">MAISON LUXE · SINCE 2026</p>
-          <h1 className="mt-6 font-serif text-5xl font-medium leading-tight md:text-6xl">
+          <h1 className="mt-6 font-serif text-5xl font-medium leading-tight md:text-7xl">
             장인의 손끝에서
             <br />
             완성되는 명품
@@ -38,7 +35,7 @@ export default async function HomePage() {
           </p>
           <Link
             href="/products"
-            className="mt-10 inline-block rounded-sm border border-white px-10 py-4 text-sm tracking-luxe transition hover:bg-white hover:text-foreground"
+            className="pointer-events-auto mt-10 inline-block rounded-sm border border-white px-10 py-4 text-sm tracking-luxe transition hover:bg-white hover:text-foreground"
           >
             컬렉션 보기
           </Link>
